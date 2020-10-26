@@ -18,6 +18,7 @@ else
   fi  
 
   echo "Couldn't find PEM file, creating one for domain $DOMAIN"
+  mkdir -p /etc/ssl/hitch
   cd /etc/ssl/hitch
   openssl req -newkey rsa:2048 -sha256 -keyout example.com.key -nodes -x509 -days 365 -out example.crt -subj "/C=CH/ST=Zurich/L=Zurich/O=Snakeoil Inc/OU=IT Department/CN=$DOMAIN"
   cat example.com.key example.crt > combined.pem
@@ -25,7 +26,7 @@ fi
 
 
 exec bash -c \
-  "exec /usr/local/sbin/hitch --user=hitch \
+  "exec /usr/local/sbin/hitch --user=nobody \
   $HITCH_PARAMS \
   --ciphers=$HITCH_CIPHER \
   $HITCH_PEM"

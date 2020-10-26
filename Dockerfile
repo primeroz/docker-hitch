@@ -1,8 +1,7 @@
-FROM alpine:3.12
-MAINTAINER Adrian Gschwend <adrian.gschwend@zazuko.com>
+FROM alpine:3.12 as BUILD
 
 # Only update below
-ARG HITCH_VERSION=1.6.0
+ARG HITCH_VERSION=1.6.1
 
 # dependencies
 RUN apk --update add bash build-base libev libev-dev automake openssl openssl-dev autoconf curl byacc flex
@@ -18,6 +17,12 @@ RUN cd / && \
     rm -rf /tmp/* && \
     apk del git build-base libev-dev automake autoconf openssl-dev flex byacc && \
     rm -rf /var/cache/apk/*
+
+FROM alpine:3.12
+MAINTAINER Francesco Ciocchetti <primeroznl@gmail.com>
+
+RUN apk --update --no-cache add bash libev openssl curl
+COPY --from=BUILD /usr/local/sbin/hitch /usr/local/sbin/hitch
 
 ADD start.sh /start.sh
 
